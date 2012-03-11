@@ -6,7 +6,7 @@ class QueryTest < Test::Unit::TestCase
     @connection = Vertica::Connection.new(TEST_CONNECTION_HASH)
     @connection.query("DROP TABLE IF EXISTS test_ruby_vertica_table CASCADE;")    
     @connection.query("CREATE TABLE test_ruby_vertica_table (id int, name varchar(100))")
-    @connection.query("CREATE PROJECTION IF NOT EXISTS test_ruby_vertica_table_p (id, name) AS SELECT * FROM test_ruby_vertica_table SEGMENTED BY HASH(id) ALL NODES OFFSET 1")
+    @connection.query("CREATE PROJECTION IF NOT EXISTS test_ruby_vertica_table_p (id, name) AS SELECT * FROM test_ruby_vertica_table SEGMENTED BY HASH(id) ALL NODES KSAFE 1")
     @connection.query("INSERT INTO test_ruby_vertica_table VALUES (1, 'matt')")
     @connection.query("COMMIT")
   end
@@ -42,6 +42,13 @@ class QueryTest < Test::Unit::TestCase
     assert_equal :name, r.columns[1].name
     
     assert_equal [[1, "matt"]], r.rows
+  end
+
+  def test_select_query_with_block_has_columns
+    @connection.row_style = :array
+    @connection.query("SELECT * FROM test_ruby_vertica_table") do |row|
+      assert_equal 2, row.columns.length
+    end
   end
   
   

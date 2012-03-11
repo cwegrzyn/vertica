@@ -28,7 +28,8 @@ class Vertica::Result
   end
   
   def format_row_as_array(row_data)
-    row = []
+    row = Vertica::ArrayRow.new
+    row.columns = @columns
     row_data.values.each_with_index do |value, idx|
       row << columns[idx].convert(value)
     end

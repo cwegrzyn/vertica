@@ -229,5 +229,6 @@ end
 
 require 'vertica/query'
 require 'vertica/column'
+require 'vertica/array_row'
 require 'vertica/result'
 require 'vertica/messages/message'
